@@ -1,0 +1,248 @@
+<div class="event-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading event details...</div>
+
+  <!-- Event Content -->
+  <div *ngIf="!loading && event">
+    <!-- Header with Back Button -->
+    <div class="page-header">
+      <button class="back-btn" (click)="goBack()">
+        <span>←</span> Back to Dashboard
+      </button>
+      <div class="header-actions">
+        <button *ngIf="isOrganizer" class="btn-edit" (click)="toggleEditMode()">
+          <span>{{ editMode ? '✕ Cancel' : '✏️ Edit' }}</span>
+        </button>
+        <button *ngIf="isOrganizer" class="btn-delete" (click)="deleteEvent()">
+          <span>🗑️ Delete</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Info Card -->
+    <div class="event-card">
+      <!-- Edit Mode -->
+      <div *ngIf="editMode" class="edit-form">
+        <h2>Edit Event</h2>
+        
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" [(ngModel)]="editData.title" class="form-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" [(ngModel)]="editData.date" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" [(ngModel)]="editData.time" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" [(ngModel)]="editData.location" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="editData.description" class="form-textarea" rows="4"></textarea>
+        </div>
+
+        <button class="btn-save" (click)="saveEvent()">
+          <span>✓ Save Changes</span>
+        </button>
+      </div>
+
+      <!-- View Mode -->
+      <div *ngIf="!editMode" class="event-info">
+        <h2>{{ event.title }}</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-icon">📅</span>
+            <div>
+              <strong>Date & Time</strong>
+              <p>{{ event.start_datetime | date:'full' }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <div>
+              <strong>Location</strong>
+              <p>{{ event.location }}</p>
+            </div>
+          </div>
+          <div class="info-item full-width" *ngIf="event.description">
+            <span class="info-icon">📄</span>
+            <div>
+              <strong>Description</strong>
+              <p>{{ event.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Status (for non-organizer attendees) -->
+    <div class="status-card" *ngIf="myAttendeeRecord && !isOrganizer">
+      <h3>📋 Your Attendance Status</h3>
+      <div class="status-selector">
+        <select [(ngModel)]="myStatus" class="status-dropdown">
+          <option value="pending">Pending Response</option>
+          <option value="going">Going</option>
+          <option value="maybe">Maybe</option>
+          <option value="not_going">Not Going</option>
+        </select>
+        <button (click)="updateStatus()" class="btn-update-status">
+          Update Status
+        </button>
+      </div>
+    </div>
+
+    <!-- Organizer Panel -->
+    <div *ngIf="isOrganizer" class="organizer-panel">
+      <h3>👑 Organizer Controls</h3>
+      
+      <!-- Invite Section -->
+      <div class="panel-section">
+        <h4>Invite Attendee</h4>
+        <div class="invite-form">
+          <input 
+            type="email" 
+            placeholder="Enter email..." 
+            [(ngModel)]="inviteEmail"
+            class="invite-input">
+          <select [(ngModel)]="inviteRole" class="role-select">
+            <option value="attendee">Attendee</option>
+            <option value="organizer">Co-Organizer</option>
+          </select>
+          <button (click)="sendInvite()" class="btn-invite">
+            ✉️ Send Invite
+          </button>
+        </div>
+      </div>
+
+      <!-- Attendance Summary -->
+      <div class="panel-section">
+        <h4>Attendance Overview</h4>
+        <div class="summary-stats">
+          <div class="stat-card going">
+            <i>✅</i>
+            <span class="count">{{ getStatusCount('going') }}</span>
+            <span class="label">Going</span>
+          </div>
+          <div class="stat-card maybe">
+            <i>❓</i>
+            <span class="count">{{ getStatusCount('maybe') }}</span>
+            <span class="label">Maybe</span>
+          </div>
+          <div class="stat-card not-going">
+            <i>❌</i>
+            <span class="count">{{ getStatusCount('not_going') }}</span>
+            <span class="label">Not Going</span>
+          </div>
+          <div class="stat-card pending">
+            <i>⏰</i>
+            <span class="count">{{ getStatusCount('pending') }}</span>
+            <span class="label">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Management Section -->
+      <div class="panel-section">
+        <h4>Tasks</h4>
+        <div class="task-add-form">
+          <input 
+            type="text" 
+            placeholder="Task description..." 
+            [(ngModel)]="newTaskDescription"
+            class="task-input">
+          <select [(ngModel)]="newTaskAssigneeId" class="task-select">
+            <option value="">Assign to...</option>
+            <option *ngFor="let att of attendees" [value]="att.user_id">
+              {{ att.name || att.email || 'User #' + att.user_id }}
+            </option>
+          </select>
+          <button (click)="addTask()" class="btn-add-task">
+            ➕ Add Task
+          </button>
+        </div>
+
+        <!-- Tasks List -->
+        <div class="tasks-list" *ngIf="tasks.length > 0">
+          <div *ngFor="let task of tasks" class="task-item">
+            <div *ngIf="!task.editing" class="task-view">
+              <input 
+                type="checkbox" 
+                [checked]="task.completed"
+                (change)="toggleTaskComplete(task)"
+                class="task-checkbox">
+              <div class="task-content" [class.completed]="task.completed">
+                <p class="task-desc">{{ task.description }}</p>
+                <p class="task-assignee" *ngIf="task.assigned_to">
+                  Assigned to: {{ getAssigneeName(task.assigned_to) }}
+                </p>
+              </div>
+              <div class="task-actions">
+                <button (click)="startEditTask(task)" class="btn-icon-small">
+                  ✏️
+                </button>
+                <button (click)="deleteTask(task.id)" class="btn-icon-small delete">
+                  🗑️
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="task.editing" class="task-edit">
+              <input 
+                type="text" 
+                [(ngModel)]="task.editDescription" 
+                class="task-input-edit">
+              <select [(ngModel)]="task.editAssigneeId" class="task-select-edit">
+                <option value="">Unassigned</option>
+                <option *ngFor="let att of attendees" [value]="att.user_id">
+                  {{ att.name || att.email || 'User #' + att.user_id }}
+                </option>
+              </select>
+              <button (click)="saveTaskEdit(task)" class="btn-save-task">Save</button>
+              <button (click)="cancelTaskEdit(task)" class="btn-cancel-task">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="tasks.length === 0" class="no-tasks">No tasks yet. Add one above!</p>
+      </div>
+    </div>
+
+    <!-- Attendees List -->
+    <div class="attendees-card">
+      <h3>👥 Attendees ({{ attendees.length }})</h3>
+      <div *ngIf="attendees.length === 0" class="no-attendees">
+        <p>No attendees yet</p>
+      </div>
+      <div class="attendees-grid">
+        <div *ngFor="let a of attendees" class="attendee-item">
+          <div class="attendee-info">
+            <i class="attendee-icon">👤</i>
+            <div>
+              <p class="attendee-name">
+                <strong>{{ a.name || a.email || a.user_email || 'User #' + a.user_id }}</strong>
+                <span class="role-badge" [class.organizer]="a.role === 'organizer'">
+                  {{ a.role }}
+                </span>
+              </p>
+              <p class="attendee-email" *ngIf="a.email || a.user_email">
+                {{ a.email || a.user_email }}
+              </p>
+            </div>
+          </div>
+          <span class="badge" [ngClass]="getStatusBadgeClass(a.status)">
+            {{ a.status || 'pending' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

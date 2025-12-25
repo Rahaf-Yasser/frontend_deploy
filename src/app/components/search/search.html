@@ -1,0 +1,76 @@
+<div class="search-container">
+  <!-- Back Button -->
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <span>←</span> Back to Dashboard
+    </button>
+  </div>
+
+  <div class="search-card">
+    <h2>🔍 Search Events</h2>
+    <div class="row">
+      <input
+        type="text"
+        class="input"
+        placeholder="Search by title or description..."
+        [(ngModel)]="keyword">
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" (click)="search()">Search</button>
+      <button class="btn danger" (click)="clear()">Clear</button>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="filter-panel">
+      <h3>📊 Filters</h3>
+      
+      <label>Role</label>
+      <select class="input" [(ngModel)]="role">
+        <option value="">Any</option>
+        <option value="Organizer">Organizer</option>
+        <option value="Attendee">Attendee</option>
+      </select>
+
+      <label>Start From</label>
+      <input type="datetime-local" class="input" [(ngModel)]="start">
+
+      <label>End Before</label>
+      <input type="datetime-local" class="input" [(ngModel)]="end">
+
+      <button class="btn primary" style="margin-top: 10px;" (click)="search()">
+        Apply Filters
+      </button>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+      <div *ngIf="loading" class="loading">
+        <p>🔍 Searching...</p>
+      </div>
+
+      <h3 *ngIf="!loading && results.length > 0">
+        Found {{ results.length }} event(s)
+      </h3>
+
+      <div class="event-card" *ngFor="let e of results" (click)="viewEvent(e.id)">
+        <h3 class="title">{{ e.title }}</h3>
+        <p class="desc">{{ e.description }}</p>
+        <div class="info">
+          <p><strong>📍 Location:</strong> {{ e.location }}</p>
+          <p><strong>🕒 Starts:</strong> {{ e.start_datetime | date:'medium' }}</p>
+          <p><strong>🕐 Ends:</strong> {{ e.end_datetime | date:'medium' }}</p>
+        </div>
+      </div>
+
+      <div class="no-results" *ngIf="!loading && results.length === 0 && (keyword || role || start || end)">
+        <p>😕 No events match your search criteria.</p>
+        <p>Try adjusting your filters or search terms.</p>
+      </div>
+
+      <div class="no-search" *ngIf="!loading && !keyword && !role && !start && !end">
+        <p>👆 Enter search criteria above to find events</p>
+      </div>
+    </div>
+  </div>
+</div>

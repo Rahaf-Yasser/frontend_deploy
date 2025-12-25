@@ -1,0 +1,63 @@
+<div class="invitations-container">
+    <div class="header">
+      <h2>
+        <i class="fas fa-bell"></i> My Event Invitations
+      </h2>
+      <span class="pending-badge" *ngIf="getPendingCount() > 0">
+        {{ getPendingCount() }} pending
+      </span>
+    </div>
+  
+    <div *ngIf="loading" class="loading">
+      <p>Loading invitations...</p>
+    </div>
+  
+    <div *ngIf="!loading && invitations.length === 0" class="no-invitations">
+      <i class="fas fa-inbox"></i>
+      <p>You have no event invitations.</p>
+    </div>
+  
+    <div class="invitations-list" *ngIf="!loading && invitations.length > 0">
+      <div *ngFor="let invitation of invitations" class="invitation-card">
+        <div class="invitation-header">
+          <h3>{{ invitation.title }}</h3>
+          <span class="badge" [ngClass]="getStatusBadgeClass(invitation.status)">
+            {{ getStatusText(invitation.status) }}
+          </span>
+        </div>
+  
+        <div class="invitation-details">
+          <p><i class="fas fa-calendar"></i> <strong>Date:</strong> {{ invitation.start_datetime | date:'medium' }}</p>
+          <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> {{ invitation.location }}</p>
+          <p *ngIf="invitation.organizer_name"><i class="fas fa-user"></i> <strong>Organizer:</strong> {{ invitation.organizer_name }}</p>
+          <p *ngIf="invitation.description" class="description">{{ invitation.description }}</p>
+        </div>
+  
+        <div class="invitation-actions">
+          <button 
+            class="btn btn-success" 
+            (click)="respondToInvitation(invitation.id || invitation.event_id, 'going')"
+            [disabled]="invitation.status === 'going'">
+            <i class="fas fa-check"></i> Going
+          </button>
+          <button 
+            class="btn btn-warning" 
+            (click)="respondToInvitation(invitation.id || invitation.event_id, 'maybe')"
+            [disabled]="invitation.status === 'maybe'">
+            <i class="fas fa-question"></i> Maybe
+          </button>
+          <button 
+            class="btn btn-danger" 
+            (click)="respondToInvitation(invitation.id || invitation.event_id, 'not going')"
+            [disabled]="invitation.status === 'not going' || invitation.status === 'not_going'">
+            <i class="fas fa-times"></i> Not Going
+          </button>
+          <button 
+            class="btn btn-info" 
+            (click)="viewEventDetails(invitation.id || invitation.event_id)">
+            <i class="fas fa-info-circle"></i> Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

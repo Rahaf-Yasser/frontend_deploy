@@ -1,0 +1,51 @@
+<div class="dashboard-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <h2>My Events</h2>
+    <div class="header-right">
+      <!-- Create Event Button -->
+      <button class="create-btn" (click)="goToCreateEvent()">+ Create Event</button>
+      <!-- Notification Bell -->
+      <div class="notif" (click)="goToInvitations()" title="View Invitations">
+        🔔
+        <span class="count" *ngIf="pendingCount > 0">
+          {{ pendingCount }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Box -->
+  <div class="search-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchKeyword"
+        (input)="quickSearch()"
+        placeholder="Search events by title, location, or description..."
+        class="search-input">
+      <button class="search-btn" (click)="quickSearch()">
+        🔍 Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Events List (Grid Layout) -->
+  <div class="events-list">
+    <div class="event-card" *ngFor="let e of filteredEvents" (click)="viewEvent(e.id)">
+      <h3>{{ e.title }}</h3>
+      <p>{{ e.description }}</p>
+      <p><strong>📍 Location:</strong> {{ e.location }}</p>
+      <p><strong>🕒 Starts:</strong> {{ e.start_datetime | date:'medium' }}</p>
+    </div>
+    
+    <div *ngIf="filteredEvents.length === 0 && searchKeyword" class="no-events">
+      <p>No events found matching "{{ searchKeyword }}"</p>
+    </div>
+    
+    <div *ngIf="allEvents.length === 0" class="no-events">
+      <p>No events yet. Create your first event!</p>
+    </div>
+  </div>
+</div>

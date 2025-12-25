@@ -1,0 +1,67 @@
+<div class="container">
+
+  <div class="container">
+
+    <div class="search-wrapper">
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchKeyword"
+          placeholder="Search events..."
+        />
+        <button class="search-button" (click)="goToSearch()">Search</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>{{ editingId !== null ? 'Edit Event' : 'Create Event' }}</h2>
+
+      <input type="text" placeholder="Title" [(ngModel)]="title" />
+      <input type="text" placeholder="Description" [(ngModel)]="description" />
+      <input type="text" placeholder="Location" [(ngModel)]="location" />
+
+      <label class="date-label">Start Date and Time</label>
+      <input type="datetime-local" [(ngModel)]="start_datetime" />
+
+      <label class="date-label">End Date and Time</label>
+      <input type="datetime-local" [(ngModel)]="end_datetime" />
+
+      <div class="button-group">
+        <button class="create-btn" (click)="saveEvent()">
+          {{ editingId !== null ? 'Save Changes' : 'Create Event' }}
+        </button>
+      </div>
+    </div>
+
+    <h2 class="list-title">My Events</h2>
+
+    <div class="event-card" *ngFor="let e of events">
+      <h3>{{ e.title }}</h3>
+      <p>{{ e.description }}</p>
+      <p><b>Location:</b> {{ e.location }}</p>
+
+      <p><strong>Start Date and Time:</strong> {{ e.start_datetime | date:'medium' }}</p>
+      <p><strong>End Date and Time:</strong> {{ e.end_datetime | date:'medium' }}</p>
+
+      <div class="button-group-left">
+        <button class="update-btn" (click)="editEvent(e)">Update</button>
+        <button class="delete-btn" (click)="deleteEvent(e.id)">Delete</button>
+
+        <button class="invite-btn" (click)="goToInvite(e.id)">Invite</button>
+
+      </div>
+
+      <div class="button-group-left">
+        <button class="add-task-btn" (click)="goToAddTask(e.id)">
+          Add Task
+        </button>
+        <button class="blue-btn view-task-btn" (click)="goToViewTasks(e.id)">
+          View Tasks
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<button class="view-btn" (click)="goToTasks()">View My Tasks</button>
+
+<button class="events-btn" (click)="goToEvents()">Return to Events</button>
+<div class="tasks-container">
+  <h2 *ngIf="isCreating">{{ editingTaskId ? 'Edit Task' : 'Create Task' }}</h2>
+  <h2 *ngIf="!isCreating">Tasks for Event</h2>
+
+  <!-- CREATE / EDIT TASK FORM -->
+  <div *ngIf="isCreating" class="task-form">
+    <input type="text" placeholder="Title" [(ngModel)]="title" />
+    <input type="text" placeholder="Description" [(ngModel)]="description" />
+    <input type="date" placeholder="Due Date" [(ngModel)]="due_date" />
+    <input type="number" placeholder="Assign to User ID" [(ngModel)]="assigned_to" />
+
+    <div class="button-group">
+      <button class="create-btn" (click)="saveTask()">
+        {{ editingTaskId ? 'Save Changes' : 'Create Task' }}
+      </button>
+      <button class="cancel-btn" (click)="isCreating=false; clearForm()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- TASK LIST -->
+  <div *ngIf="!isCreating" class="task-list">
+    <button class="add-task-btn" (click)="goToCreateTask()">Add Task</button>
+
+    <div *ngIf="tasks.length === 0">
+      <p>No tasks yet.</p>
+    </div>
+
+    <div class="task-card" *ngFor="let task of tasks">
+      <h4>{{ task.title }}</h4>
+      <p>{{ task.description }}</p>
+      <p><strong>Due:</strong> {{ task.due_date | date:'shortDate' }}</p>
+      <p><strong>Assigned to:</strong> {{ task.assigned_to }}</p>
+
+      <div class="button-group-left">
+        <button class="update-btn" (click)="editTask(task.task_id)">Edit</button>
+        <button class="delete-btn" (click)="deleteTask(task.task_id)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

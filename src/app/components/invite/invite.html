@@ -1,0 +1,17 @@
+<div class="container">
+
+  <h2>Invite Attendee</h2>
+
+  <p><b>Event ID:</b> {{ eventId }}</p>
+
+  <input
+    type="email"
+    placeholder="Enter attendee email"
+    [(ngModel)]="email"
+  />
+
+  <button class="invite-btn" (click)="sendInvite()">
+    Send Invite
+  </button>
+
+</div>

@@ -1,0 +1,131 @@
+<div class="create-event-container">
+    <!-- Header -->
+    <div class="page-header">
+      <button class="back-btn" (click)="goBack()">
+        <span>←</span> Back
+      </button>
+      <h2>Create New Event</h2>
+    </div>
+  
+    <!-- Form Card -->
+    <div class="form-card">
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-banner">
+        <span class="error-icon">⚠️</span>
+        <span>{{ error }}</span>
+      </div>
+  
+      <!-- Success Message -->
+      <div *ngIf="success" class="success-banner">
+        <span class="success-icon">✓</span>
+        <span>{{ success }}</span>
+      </div>
+  
+      <!-- Form -->
+      <form class="event-form">
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title">
+            <span class="label-icon">📝</span>
+            Event Title
+            <span class="required">*</span>
+          </label>
+          <input 
+            id="title"
+            type="text" 
+            placeholder="Enter event title..." 
+            [(ngModel)]="title"
+            name="title"
+            class="form-input"
+            [class.error-input]="error && !title"
+          />
+        </div>
+  
+        <!-- Date & Time Row -->
+        <div class="form-row">
+          <!-- Date -->
+          <div class="form-group">
+            <label for="date">
+              <span class="label-icon">📅</span>
+              Date
+              <span class="required">*</span>
+            </label>
+            <input 
+              id="date"
+              type="date" 
+              [(ngModel)]="date"
+              name="date"
+              class="form-input"
+              [class.error-input]="error && !date"
+            />
+          </div>
+  
+          <!-- Time -->
+          <div class="form-group">
+            <label for="time">
+              <span class="label-icon">🕒</span>
+              Time
+              <span class="required">*</span>
+            </label>
+            <input 
+              id="time"
+              type="time" 
+              [(ngModel)]="time"
+              name="time"
+              class="form-input"
+              [class.error-input]="error && !time"
+            />
+          </div>
+        </div>
+  
+        <!-- Location -->
+        <div class="form-group">
+          <label for="location">
+            <span class="label-icon">📍</span>
+            Location
+            <span class="required">*</span>
+          </label>
+          <input 
+            id="location"
+            type="text" 
+            placeholder="Enter event location..." 
+            [(ngModel)]="location"
+            name="location"
+            class="form-input"
+            [class.error-input]="error && !location"
+          />
+        </div>
+  
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description">
+            <span class="label-icon">📄</span>
+            Description
+            <span class="optional">(optional)</span>
+          </label>
+          <textarea 
+            id="description"
+            placeholder="Describe your event..." 
+            [(ngModel)]="description"
+            name="description"
+            class="form-textarea"
+            rows="5"
+          ></textarea>
+          <div class="char-count" *ngIf="description">
+            {{ description.length }} characters
+          </div>
+        </div>
+  
+        <!-- Buttons -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="goBack()">
+            Cancel
+          </button>
+          <button type="button" class="btn-create" (click)="onCreate()">
+            <span class="btn-icon">✓</span>
+            Create Event
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
