@@ -14,6 +14,7 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist/event-planner-frontend/browser /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
+
