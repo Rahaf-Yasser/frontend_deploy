@@ -1,6 +1,6 @@
 FROM node:20-alpine AS build
 
-WORKDIR /app
+WORKDIR /apps
 
 COPY package*.json ./
 
@@ -18,5 +18,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
-new line for new branch
-new line after push
+COPY . . 
